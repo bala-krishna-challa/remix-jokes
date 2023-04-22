@@ -1,0 +1,23 @@
+import { PrismaClient } from "@prisma/client";
+
+let db: PrismaClient;
+
+declare global {
+  var __db__: PrismaClient | undefined;
+}
+
+if (process.env.NODE_ENV === "production") {
+  try {
+    db = new PrismaClient();
+  } catch (error) {
+    throw new Error("unable to create DB");
+  }
+} else {
+  if (!global.__db__) {
+    global.__db__ = new PrismaClient();
+  }
+  db = global.__db__;
+  db.$connect();
+}
+
+export { db };
